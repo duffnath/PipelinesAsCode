@@ -20,6 +20,7 @@ steps:
     Import-Module Pester
     Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML
   displayName: Run Pester Tests
+  failOnStandardError: 'true'
 
 - task: PublishTestResults@2
   inputs:
