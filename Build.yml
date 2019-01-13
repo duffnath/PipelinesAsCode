@@ -1,0 +1,31 @@
+name: $(Build.DefinitionName)-$(date:yyyyMMdd)$(rev:.r)
+trigger:
+  branches:
+    include:
+    - 'master'
+    - 'develop/*'
+    - 'release/*'
+    - 'feature/*'
+    - 'hotfix/*'
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+variables:
+  pesterScript: $(System.DefaultWorkingDirectory)\MyFirstModule.test.ps1
+  pesterOutput: $(System.DefaultWorkingDirectory)\Test-Pester.XML
+
+steps:
+- powershell: |
+    Install-Module -Name Pester -Force -SkipPublisherCheck
+  displayName: Install Pester
+
+- powershell: |
+    Import-Module Pester
+    Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML
+  displayName: Run Pester Tests
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)'
