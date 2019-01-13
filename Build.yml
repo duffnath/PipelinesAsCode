@@ -12,7 +12,7 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 variables:
-  pesterScript: $(System.DefaultWorkingDirectory)\MyFirstModule.test.ps1
+  pesterScript: $(System.DefaultWorkingDirectory)\PipelinesAsCode.Tests.ps1
   pesterOutput: $(System.DefaultWorkingDirectory)\Test-Pester.XML
 
 steps:

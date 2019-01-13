@@ -54,7 +54,7 @@ Param(
             name = "Hosted"
         }
         repository = @{
-            name = "SimpleAuth"
+            name = $project
             defaultBranch = "refs/heads/master"
             clean = $true
             type = "TfsGit"
