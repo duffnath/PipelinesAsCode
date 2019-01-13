@@ -25,6 +25,7 @@ steps:
   inputs:
     testResultsFormat: NUnit
     testResultsFiles: $(pesterOutput) 
+    failOnStandardError: 'true'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
