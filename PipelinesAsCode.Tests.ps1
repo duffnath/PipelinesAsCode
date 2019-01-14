@@ -5,12 +5,13 @@ Import-Module "$here\$sut"
  
 Describe "Get-AuthToken" {
     $userName = "nate.duff@outlook.com"
-    $password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
+    $password = ConvertTo-SecureString $(StandardPW) -AsPlainText -Force
 
     It "outputs a string with good credentials" {
         $goodCreds = Get-Creds -userName $userName -password $password
         $authToken = Get-AuthToken -creds $goodCreds
 
+        $authToken.GetType().Name | Should Be 'String'
         $authToken.Length -gt 1 | Should -BeTrue
     }
 
