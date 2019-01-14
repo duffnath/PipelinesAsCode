@@ -19,8 +19,14 @@ steps:
 - powershell: |
     Import-Module Pester
     Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML
+    
+    $failures = ([xml](Get-Content $(pesterOutput))).'test-results'.failures
+
+    if ($failures -gt 0) 
+    { 
+      throw "$failures tests failed."
+    }
   displayName: Run Pester Tests
-  failOnStderr: true
 
 - task: PublishTestResults@2
   inputs:
