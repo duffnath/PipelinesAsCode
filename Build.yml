@@ -29,11 +29,13 @@ steps:
   displayName: Run Pester Tests
 
 - task: PublishTestResults@2
+  condition: always()
   inputs:
     testResultsFormat: NUnit
     testResultsFiles: $(pesterOutput)
 
 - task: PublishBuildArtifacts@1
+  condition: always()
   displayName: 'Publish Artifact'
   inputs:
     PathtoPublish: '$(System.DefaultWorkingDirectory)'

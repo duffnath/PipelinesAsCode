@@ -3,7 +3,7 @@ Param(
     $userName = "nate.duff@outlook.com",
     $organization = "NateDuff",
     $project = "PipelinesAsCode",
-    $buildName = "PowerShell Build",
+    $buildName = "CI Build",
     $releaseName = "PowerShell Release",
     $manifestPath = "Build.yml",
     $publicBuildVariables = @(
