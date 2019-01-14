@@ -11,7 +11,6 @@ Describe "Get-AuthToken" {
         $goodCreds = Get-Creds -userName $userName -password $password
         $authToken = Get-AuthToken -creds $goodCreds
 
-        $authToken.GetType().Name | Should Be 'String'
         $authToken.Length -gt 1 | Should -BeTrue
     }
 
