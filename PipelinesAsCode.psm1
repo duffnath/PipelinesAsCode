@@ -35,15 +35,16 @@ Function Get-AuthToken ([pscredential]$creds) {
 }
 
 Function New-BuildDefinition {
-Param(
-    [string]$org, 
-    [string]$project, 
-    [string]$buildName, 
-    [pscredential]$creds, 
-    [string]$manifestPath,
-    $publicBuildVariables,
-    $secretBuildVariables
-)
+    Param(
+        [string]$org, 
+        [string]$project, 
+        [string]$buildName, 
+        [pscredential]$creds, 
+        [string]$manifestPath,
+        $publicBuildVariables,
+        $secretBuildVariables
+    )
+    
     $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions`?api-version=5.0-preview.7"
 
     $payload = @{
