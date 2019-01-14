@@ -27,6 +27,8 @@ steps:
       throw "$failures tests failed."
     }
   displayName: Run Pester Tests
+  env:
+    StandardPW: $ENV:StandardPW
 
 - task: PublishTestResults@2
   condition: always()
