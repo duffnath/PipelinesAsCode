@@ -7,7 +7,7 @@ Describe "Get-AuthToken" {
     $userName = "nate.duff@outlook.com"
     $password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
 
-    It "outputs a string with good credentials" {
+    It " outputs a string with good credentials" {
         $goodCreds = Get-Creds -userName $userName -password $password
         $authToken = Get-AuthToken -creds $goodCreds
 
@@ -15,7 +15,7 @@ Describe "Get-AuthToken" {
         $authToken.Length -gt 1 | Should -BeTrue
     }
 
-    It "outputs an error with bad credentials" {
+    It " outputs an error with bad credentials" {
         $badPassword = ConvertTo-SecureString "InvalidPassword" -AsPlainText -Force
 
         $badCreds = Get-Creds -userName $userName -password $badPassword
