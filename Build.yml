@@ -39,8 +39,9 @@ steps:
 - task: CopyFiles@2
   displayName: 'Stage Module Files'
   inputs:
-    SourceFolder: 'PipelinesAsCode.ps*'
-    TargetFolder: '$(System.DefaultWorkingDirectory)/Module'
+    sourceFolder: .
+    contents: 'PipelinesAsCode.ps**'
+    targetFolder: '$(System.DefaultWorkingDirectory)/Module'
 
 - task: PublishBuildArtifacts@1
   condition: always()
