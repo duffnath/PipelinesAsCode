@@ -36,6 +36,12 @@ steps:
     testResultsFormat: NUnit
     testResultsFiles: $(pesterOutput)
 
+- task: CopyFiles@2
+  displayName: 'Stage Module Files'
+  inputs:
+    SourceFolder: 'PipelinesAsCode.ps*'
+    TargetFolder: '$(System.DefaultWorkingDirectory)/Module'
+
 - task: PublishBuildArtifacts@1
   condition: always()
   displayName: 'Publish Artifact'

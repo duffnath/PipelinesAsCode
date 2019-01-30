@@ -85,9 +85,34 @@ Function New-BuildDefinition {
     (Invoke-WebRequest @newBuildParams).Content | ConvertFrom-Json
 }
 
-Function Get-DeploymentPhases ([string]$environmentName) {
+Function Get-AgentID {
+    Param(
+        [ValidateSet('Hosted')]
+        [string]$agentType = 'Hosted',
+        [string]$org,
+        [pscredential]$creds 
+    )
+
+    $uri = "https://dev.azure.com/$org/_apis/distributedtask/pools?api-version=5.1-preview.1"
+
+    $headers = @{
+        Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+    }
+
+    $agents = (Invoke-RestMethod $uri -Credential $creds -Headers $headers).value
+
+    return ($agents | where {$_.name -eq $agentType}).ID
+}
+
+Function Get-DeploymentPhases {
+    Param(
+        [string]$environmentName, 
+        [string]$org, 
+        [pscredential]$creds
+    )
+
     $hostedQueue = @{
-        queueId = 20
+        queueId = Get-AgentID -org $org -creds $creds
     }
 
     $deployPhases = @(
@@ -120,7 +145,7 @@ Function Get-DeploymentPhases ([string]$environmentName) {
     }
 }
 
-Function New-Environment ([string]$environmentName, [int]$rank) {
+Function New-Environment ([string]$environmentName, [int]$rank, [string]$org) {
     switch ($environmentName) {
         "Dev" {
             $condition = @{
@@ -160,7 +185,7 @@ Function New-Environment ([string]$environmentName, [int]$rank) {
             concurrencyCount = 1
             queueDepthCount = 0
         }
-        deployPhases = @(Get-DeploymentPhases $environmentName)
+        deployPhases = @(Get-DeploymentPhases -environmentName $environmentName -org $org)
         environmentOptions = @{
             badgeEnabled = $true
             autoLinkWorkItems = $true
@@ -209,6 +234,11 @@ Param(
 )
     $uri = "https://vsrm.dev.azure.com/$org/$project/_apis/release/definitions?api-version=5.0-preview.3"
 
+    $orgParams = @{
+        org = $org
+        creds = $creds
+    }
+
     $payload = @{
         name = $releaseName        
         releaseNameFormat = "Release-`$(rev:r)"
@@ -231,9 +261,9 @@ Param(
             }
         )
         environments = @(
-            (New-Environment -environmentName "Dev" -rank 1),
-            (New-Environment -environmentName "Test" -rank 2),
-            (New-Environment -environmentName "Prod" -rank 3)
+            (New-Environment -environmentName "Dev" -rank 1 @orgParams),
+            (New-Environment -environmentName "Test" -rank 2 @orgParams),
+            (New-Environment -environmentName "Prod" -rank 3 @orgParams)
         )
         triggers = @(
             @{
