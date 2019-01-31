@@ -1,9 +1,11 @@
 Param(
     $galleryKey,
-    $module = "PipelinesAsCode",
+    $moduleName = "PipelinesAsCode",
     $modulePath = ".\CI Build\drop\Module"
 )
 
-Import-Module "$modulePath\$module.psm1"
+$module = "$modulePath\$moduleName.psm1"
+
+Import-Module $module
 
 Publish-Module -Name $module -NuGetApiKey $galleryKey
