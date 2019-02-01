@@ -8,4 +8,6 @@ $module = "$modulePath\$moduleName.psm1"
 
 Import-Module $module
 
-Publish-Module -Name $module -NuGetApiKey $galleryKey
+$releaseNum = $ENV:RELEASE_RELEASENAME.Split("-") | select -Last 1
+
+Publish-Module -Name $module -NuGetApiKey $galleryKey -FormatVersion $releaseNum
