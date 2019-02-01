@@ -48,7 +48,7 @@ else
 
 $moduleVersion = [version]::new($majorVersion, $minorVersion, $buildVersion)
 
-Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RequiredModules @($moduleName)
+Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RequiredModules @("$module.psm1")
 
 # Import and Upload Module
 Import-Module "$module.psd1"
