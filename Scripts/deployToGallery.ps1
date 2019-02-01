@@ -7,7 +7,7 @@ Param(
 
 $module = "$modulePath\$moduleName"
 
-$previousVersion = (Find-Module $moduleName).Version
+$previousVersion = (Find-Module $moduleName -AllVersions | select -First 1).Version
 
 $previousMajorVersion = $previousVersion.Major
 $previousMinorVersion = $previousVersion.Minor
