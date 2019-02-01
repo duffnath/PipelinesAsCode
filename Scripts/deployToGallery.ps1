@@ -56,3 +56,5 @@ Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RootMo
 Import-Module "$module.psd1"
 
 Publish-Module -Name "$module.psd1" -NuGetApiKey $galleryKey # -RequiredVersion $releaseVersion
+
+Write-Host "##vso[task.setvariable variable=ReleaseVersion;]$($moduleVersion.ToString())"
