@@ -5,7 +5,7 @@ Param(
     $releaseVersion
 )
 
-$module = "$modulePath\$moduleName.psd1"
+$module = "$modulePath\$moduleName"
 
 $previousVersion = (Find-Module $moduleName).Version
 
@@ -48,9 +48,9 @@ else
 
 $moduleVersion = [version]::new($majorVersion, $minorVersion, $buildVersion)
 
-Update-ModuleManifest -Path $module -ModuleVersion $moduleVersion
+Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RequiredModules "$module.psm1"
 
 # Import and Upload Module
-Import-Module $module
+Import-Module "$module.psd1"
 
-Publish-Module -Name $module -NuGetApiKey $galleryKey # -RequiredVersion $releaseVersion
+Publish-Module -Name "$module.psd1" -NuGetApiKey $galleryKey # -RequiredVersion $releaseVersion
