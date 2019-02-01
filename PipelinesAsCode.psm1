@@ -286,7 +286,7 @@ Param(
     }
 
     (Invoke-WebRequest @newReleaseParams).Content | ConvertFrom-Json
-}
+} 
 
 Function Remove-ReleaseDefinition {
 Param(
