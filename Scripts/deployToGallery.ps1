@@ -19,31 +19,22 @@ $newMajorVersion = $newVersion | select -First 1
 $newMinorVersion = $newVersion | select -Last 1
 
 
-if ($previousMajorVersion -ne $newMajorVersion) 
-{
+if ($previousMajorVersion -ne $newMajorVersion) {
     $majorVersion = $newMajorVersion
+} else {    
+    $majorVersion = $previousMajorVersion    
 }
-else 
-{    
-    $majorVersion = $previousMajorVersion
 
-    if ($previousMinorVersion -ne $newMinorVersion)
-    {
-        $minorVersion = $newMinorVersion
-    }
-    else
-    {
-        $minorVersion = $previousMinorVersion
+if ($previousMinorVersion -ne $newMinorVersion) {
+    $minorVersion = $newMinorVersion
+} else {
+    $minorVersion = $previousMinorVersion
+}
 
-        if ($previousBuildVersion -eq -1) 
-        {
-            $buildVersion = 1
-        }
-        else
-        {
-            $buildVersion = $previousBuildVersion + 1
-        }
-    }
+if ($previousBuildVersion -eq -1) {
+    $buildVersion = 1
+} else {
+    $buildVersion = $previousBuildVersion + 1
 }
 
 $moduleVersion = [version]::new($majorVersion, $minorVersion, $buildVersion)
