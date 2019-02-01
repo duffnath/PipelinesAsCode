@@ -35,20 +35,20 @@ else
     {
         $minorVersion = $previousMinorVersion
 
-        if ($build -eq -1) 
+        if ($previousBuildVersion -eq -1) 
         {
             $buildVersion = 1
         }
         else
         {
-            $buildVersion = $build + 1
+            $buildVersion = $previousBuildVersion + 1
         }
     }
 }
 
 $moduleVersion = [version]::new($majorVersion, $minorVersion, $buildVersion)
 
-Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RequiredModules "$module.psm1"
+Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion
 
 # Import and Upload Module
 Import-Module "$module.psd1"
