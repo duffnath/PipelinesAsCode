@@ -51,7 +51,7 @@ Description = 'The purpose of this module is to provide Azure DevOps pipeline ad
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @('PipelinesAsCode')
+# RequiredModules = @('PipelinesAsCode')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
