@@ -69,7 +69,19 @@ Description = 'The purpose of this module is to provide Azure DevOps pipeline ad
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+FunctionsToExport = @(
+    'Get-AuthToken',
+    'Get-BuildDefinions',
+    'Get-Creds',
+    'Get-DeploymentPhases',
+    'Get-DeployVariables',
+    'Get-ReleaseDefinions',
+    'New-BuildDefinition',
+    'New-Environment',
+    'New-ReleaseDefinition',
+    'Remove-BuildDefinition',
+    'Remove-ReleaseDefinition'
+)
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
