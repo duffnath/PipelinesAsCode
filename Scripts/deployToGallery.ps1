@@ -51,6 +51,7 @@ $moduleVersion = [version]::new($majorVersion, $minorVersion, $buildVersion)
 Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RequiredModules @("$module.psm1")
 
 # Import and Upload Module
+Import-Module "$module.psm1"
 Import-Module "$module.psd1"
 
 Publish-Module -Name "$module.psd1" -NuGetApiKey $galleryKey # -RequiredVersion $releaseVersion
