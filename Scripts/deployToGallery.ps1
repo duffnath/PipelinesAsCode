@@ -1,13 +1,14 @@
 Param(
     $galleryKey,
     $moduleName = "PipelinesAsCode",
-    $modulePath = ".\CI Build\drop\Module"
+    $modulePath = ".\CI Build\drop\Module",
+    $releaseVersion = "$ENV:Release_ReleaseName"
 )
 
-$module = "$modulePath\$moduleName.psm1"
+$module = "$modulePath\$moduleName.psd1"
+
+Update-ModuleManifest -Path $module -ModuleVersion $releaseVersion
 
 Import-Module $module
 
-$releaseNum = $ENV:RELEASE_RELEASENAME.Split("-") | select -Last 1
-
-Publish-Module -Name $module -NuGetApiKey $galleryKey -RequiredVersion $releaseNum
+Publish-Module -Name $module -NuGetApiKey $galleryKey # -RequiredVersion $releaseVersion
