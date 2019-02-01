@@ -52,6 +52,8 @@ Import-Module "$module.psm1"
 
 Update-ModuleManifest -Path "$module.psd1" -ModuleVersion $moduleVersion -RootModule "$module.psm1"
 
+Write-Output "New Version: $($moduleVersion.ToString())"
+
 # Import and Upload Module
 Import-Module "$module.psd1"
 
