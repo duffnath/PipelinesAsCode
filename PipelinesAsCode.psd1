@@ -51,7 +51,7 @@ Description = 'The purpose of this module is to provide Azure DevOps pipeline ad
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @('PipelinesAsCode')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
@@ -72,19 +72,7 @@ Description = 'The purpose of this module is to provide Azure DevOps pipeline ad
 FunctionsToExport = @()
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @(
-    'Get-AuthToken',
-    'Get-BuildDefinions',
-    'Get-Creds',
-    'Get-DeploymentPhases',
-    'Get-DeployVariables',
-    'Get-ReleaseDefinions',
-    'New-BuildDefinition',
-    'New-Environment',
-    'New-ReleaseDefinition',
-    'Remove-BuildDefinition',
-    'Remove-ReleaseDefinition'
-)
+CmdletsToExport = @()
 
 # Variables to export from this module
 VariablesToExport = '*'
@@ -96,7 +84,7 @@ AliasesToExport = @()
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-ModuleList = @('.\PipelinesAsCode.psm1')
+# ModuleList = @('PipelinesAsCode')
 
 # List of all files packaged with this module
 # FileList = @()
@@ -113,7 +101,10 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/duffnath/PipelinesAsCode'
+        
+        # Pipeline website
+        PipelineUri = 'https://dev.azure.com/NateDuff/PipelinesAsCode'
 
         # A URL to an icon representing this module.
         # IconUri = ''
