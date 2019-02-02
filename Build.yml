@@ -21,7 +21,7 @@ steps:
     Import-Module Pester
     Import-Module PSCodeCovIo
 
-    $files = (Get-ChildItems . -Filter "*PipelinesAsCode.psm1").Fullname
+    $files = (Get-ChildItem . -Filter "*PipelinesAsCode.psm1").Fullname
 
     $res = Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML -CodeCoverage $files 
     
