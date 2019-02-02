@@ -14,11 +14,16 @@ variables:
 steps:
 - powershell: |
     Install-Module -Name Pester -Force -SkipPublisherCheck
-  displayName: Install Pester
+    Install-Module -Name PSCodeCovIo -Force -SkipPublisherCheck
+  displayName: Install Modules
 
 - powershell: |
     Import-Module Pester
-    Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML
+    Import-Module PSCodeCovIo
+
+    $files = (Get-ChildItems . -Filter "*PipelinesAsCode.psm1").Fullname
+
+    $res = Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML -CodeCoverage $files 
     
     $failures = ([xml](Get-Content $(pesterOutput))).'test-results'.failures
 
@@ -26,6 +31,10 @@ steps:
     { 
       throw "$failures tests failed."
     }
+
+    Export-CodeCovIoJson -CodeCoverage $res.CodeCoverage -RepoRoot $pwd -Path coverage.json
+    
+    Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
   displayName: Run Pester Tests
   env:
     StandardPW: $ENV:StandardPW
@@ -42,6 +51,13 @@ steps:
     sourceFolder: .
     contents: 'PipelinesAsCode.ps**'
     targetFolder: '$(System.DefaultWorkingDirectory)/Module'
+
+- task: Bash@3
+  displayName: 'Upload coverage to Codecov'
+  inputs:
+    targetType: 'filePath'
+    filePath: ./codecov.sh
+    arguments: -f coverage.json -t $(CodeCoverageKey)
 
 - task: PublishBuildArtifacts@1
   condition: always()
