@@ -23,7 +23,7 @@ steps:
 
     $files = (Get-ChildItem . -Filter "*PipelinesAsCode.psm1").Fullname
 
-    $res = Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML -CodeCoverage $files 
+    $res = Invoke-Pester -Script $(pesterScript) -OutputFile $(pesterOutput) -OutputFormat NUnitXML -CodeCoverage $files -PassThru
     
     $failures = ([xml](Get-Content $(pesterOutput))).'test-results'.failures
 
