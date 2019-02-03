@@ -87,21 +87,14 @@ Function New-BuildDefinition {
 
 Function Get-AgentID {
     Param(
-        [ValidateSet('Hosted')]
-        [string]$agentType = 'Hosted',
         [string]$org,
+        [string]$project = "PipelinesAsCode",
         [pscredential]$creds 
     )
 
-    $uri = "https://dev.azure.com/$org/_apis/distributedtask/pools?api-version=5.1-preview.1"
+    $uri = (Get-ReleaseDefinions -org $org -project $project).value.url
 
-    $headers = @{
-        Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
-    }
-
-    $agents = (Invoke-RestMethod $uri -Credential $creds -Headers $headers).value
-
-    return ($agents | where {$_.name -eq $agentType}).ID
+    return (Invoke-RestMethod $uri).environments[0].deployPhases[0].deploymentInput.queueId
 }
 
 Function Get-DeploymentPhases {

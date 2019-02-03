@@ -34,8 +34,6 @@ Describe "Get-AgentID" {
 
         $agentId = Get-AgentId -org "NateDuff" -creds $creds
 
-        Write-Verbose $agentId
-
         $agentId.GetType().Name | Should Be "int32"
     }
 }
