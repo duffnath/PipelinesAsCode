@@ -10,7 +10,7 @@ $creds = Get-Creds -userName $userName -password $password
 
 $baseParams = @{
     org = "NateDuff" 
-    project = "PipelinesAsCode" 
+    project = "TestProject" 
     creds = $creds
     buildName = "TestBuildDef" 
     Force = $true
