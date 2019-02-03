@@ -24,3 +24,18 @@ Describe "Get-AuthToken" {
         $authToken | Should -Not -Exist
     }
 }
+
+Describe "Get-AgentID" {
+    $userName = "nate.duff@outlook.com"
+    $password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
+
+    It " outputs the current agent ID" {
+        $creds = Get-Creds -userName $userName -password $password
+
+        $agentId = Get-AgentId -org "NateDuff" -creds $creds
+
+        Write-Verbose $agentId
+
+        $agentId.GetType().Name | Should Be "int32"
+    }
+}
