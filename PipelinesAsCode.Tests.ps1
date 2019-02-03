@@ -2,11 +2,24 @@ $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.ps1", ".psm1")
 
 Import-Module "$here\$sut"
- 
-Describe "Get-AuthToken" {
-    $userName = "nate.duff@outlook.com"
-    $password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
 
+$userName = "nate.duff@outlook.com"
+$password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
+
+$creds = Get-Creds -userName $userName -password $password
+
+$baseParams = @{
+    org = "NateDuff" 
+    project = "PipelinesAsCode" 
+    creds = $creds
+    buildName = "TestBuildDef" 
+    Force = $true
+}
+
+$Script:testBuildId = $null
+$Script:projectId = $null
+
+Describe "Get-AuthToken" {
     It " outputs a string with good credentials" {
         $goodCreds = Get-Creds -userName $userName -password $password
         $authToken = Get-AuthToken -creds $goodCreds
@@ -26,14 +39,61 @@ Describe "Get-AuthToken" {
 }
 
 Describe "Get-AgentID" {
-    $userName = "nate.duff@outlook.com"
-    $password = ConvertTo-SecureString $ENV:StandardPW -AsPlainText -Force
-
     It " outputs the current agent ID" {
-        $creds = Get-Creds -userName $userName -password $password
-
         $agentId = Get-AgentId -org "NateDuff" -creds $creds
 
         $agentId.GetType().Name | Should Be "int32"
+    }
+}
+
+Describe "New-BuildDefinition" {
+    It " creates a Build Definition" {
+        $newBuildParams = @{           
+            manifestPath = "Build.yml"
+            publicBuildVariables = @(
+                @{
+                    Name = "BuildConfig"
+                    Value = "Debug"
+                }
+            )
+            secretBuildVariables = @(
+                @{
+                    Name = "StandardPW"
+                    Value = $ENV:StandardPW
+                }
+            )
+        }
+
+        $testBuild = New-BuildDefinition @baseParams @newBuildParams
+
+        $testBuild.id.GetType().Name | Should Be "Int32"
+
+        $Script:testBuildId = $testBuild.id
+        $Script:projectId = $testBuild.project.id
+    }
+}
+
+Describe "New-ReleaseDefinition" {
+    It " creates a Release Definition" {
+        $newReleaseParams = @{
+            releaseName = "TestReleaseDef"
+            buildID = $Script:testBuildId
+            projectID = $Script:projectId            
+            publicReleaseVariables = @()
+            secretReleaseVariables = @(
+                @{
+                    Name = "StandardPW"
+                    Value = $ENV:StandardPW
+                }
+            )
+        }
+
+        $testRelease = New-ReleaseDefinition @baseParams @newReleaseParams
+
+        $testRelease.id.GetType().Name | Should Be "Int32"
+
+        Remove-ReleaseDefinition @baseParams -releaseDefinitionID $testRelease.id
+
+        Remove-BuildDefinition @baseParams -buildDefinitionID $Script:testBuildId
     }
 }

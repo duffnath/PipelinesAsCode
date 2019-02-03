@@ -344,7 +344,8 @@ Function Remove-BuildDefinition {
         [string]$org, 
         [string]$project, 
         [int]$buildDefinitionID, 
-        [pscredential]$creds
+        [pscredential]$creds,
+        [switch]$Force
     )
 
     begin {
