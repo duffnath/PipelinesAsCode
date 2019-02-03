@@ -1,4 +1,5 @@
 # Pipelines As Code
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ddf83a738f83495d90facc680506248d)](https://app.codacy.com/app/duffnath/PipelinesAsCode?utm_source=github.com&utm_medium=referral&utm_content=duffnath/PipelinesAsCode&utm_campaign=Badge_Grade_Settings)
 [![codecov](https://codecov.io/gh/duffnath/PipelinesAsCode/branch/master/graph/badge.svg)](https://codecov.io/gh/duffnath/PipelinesAsCode)
 [![Build Status](https://dev.azure.com/NateDuff/PipelinesAsCode/_apis/build/status/CI%20Build?branchName=master)](https://dev.azure.com/NateDuff/PipelinesAsCode/_build/latest?definitionId=28&branchName=master)
 [![Release Status](https://vsrm.dev.azure.com/NateDuff/_apis/public/Release/badge/ad13437d-ad6a-43cb-af82-61d7294a999e/1/1)](https://vsrm.dev.azure.com/NateDuff/_apis/public/Release/badge/ad13437d-ad6a-43cb-af82-61d7294a999e/1/1)
