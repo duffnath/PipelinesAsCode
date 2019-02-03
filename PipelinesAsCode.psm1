@@ -35,6 +35,7 @@ Function Get-AuthToken ([pscredential]$creds) {
 }
 
 Function New-BuildDefinition {
+    [CmdletBinding(SupportsShouldProcess = $true)]
     Param(
         [string]$org, 
         [string]$project, 
@@ -42,47 +43,57 @@ Function New-BuildDefinition {
         [pscredential]$creds, 
         [string]$manifestPath,
         $publicBuildVariables,
-        $secretBuildVariables
+        $secretBuildVariables,
+        [switch]$Force
     )
-    
-    $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions`?api-version=5.0-preview.7"
 
-    $payload = @{
-        name = $buildName
-        buildNumberFormat = "`$(Build.DefinitionName)-`$(date:yyyyMMdd)`$(rev:.r)"
-        badgeEnabled = $true
-        queue = @{
-            name = "Hosted"
-        }
-        repository = @{
-            name = $project
-            defaultBranch = "refs/heads/master"
-            clean = $true
-            type = "TfsGit"
-            properties = @{
-                cleanOptions = 1
-                reportBuildStatus = $true
+    begin {            
+        $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions`?api-version=5.0-preview.7"
+
+        $payload = @{
+            name = $buildName
+            buildNumberFormat = "`$(Build.DefinitionName)-`$(date:yyyyMMdd)`$(rev:.r)"
+            badgeEnabled = $true
+            queue = @{
+                name = "Hosted"
             }
+            repository = @{
+                name = $project
+                defaultBranch = "refs/heads/master"
+                clean = $true
+                type = "TfsGit"
+                properties = @{
+                    cleanOptions = 1
+                    reportBuildStatus = $true
+                }
+            }
+            process = @{
+                yamlFilename = $manifestPath
+                type = 2
+            }
+            variables = Get-DeployVariables $publicBuildVariables $secretBuildVariables
         }
-        process = @{
-            yamlFilename = $manifestPath
-            type = 2
+
+        $newBuildParams = @{
+            uri = $uri 
+            Method = "Post"
+            Body = ($payload | ConvertTo-Json -Compress)
+            Headers = @{
+                Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+            }
+            Credential = $creds
+            ContentType = "application/json"
         }
-        variables = Get-DeployVariables $publicBuildVariables $secretBuildVariables
     }
 
-    $newBuildParams = @{
-        uri = $uri 
-        Method = "Post"
-        Body = ($payload | ConvertTo-Json -Compress)
-        Headers = @{
-            Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+    process {            
+        if ($Force -or $PSCmdlet.ShouldProcess(            
+            $buildName,             
+            "Create Build Definition for $org on $project" 
+        )) {
+            (Invoke-WebRequest @newBuildParams).Content | ConvertFrom-Json
         }
-        Credential = $creds
-        ContentType = "application/json"
     }
-
-    (Invoke-WebRequest @newBuildParams).Content | ConvertFrom-Json
 }
 
 Function Get-AgentID {
