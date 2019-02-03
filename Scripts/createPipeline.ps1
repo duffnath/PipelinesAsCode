@@ -54,7 +54,7 @@ $releaseParams = @{
     secretReleaseVariables = $secretReleaseVariables
 }
 
-$release = New-ReleaseDefinition @baseParams @releaseParams
+$release = New-ReleaseDefinition @baseParams @releaseParams -Force
 
 $release
 

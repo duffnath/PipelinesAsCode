@@ -47,7 +47,7 @@ Function New-BuildDefinition {
         [switch]$Force
     )
 
-    begin {            
+    begin {
         $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions`?api-version=5.0-preview.7"
 
         $payload = @{
@@ -86,8 +86,8 @@ Function New-BuildDefinition {
         }
     }
 
-    process {            
-        if ($Force -or $PSCmdlet.ShouldProcess(            
+    process {
+        if ($Force -or $PSCmdlet.ShouldProcess(
             $buildName,             
             "Create Build Definition for $org on $project" 
         )) {
@@ -225,115 +225,150 @@ Function New-Environment ([string]$environmentName, [int]$rank, [string]$org) {
 }
 
 Function New-ReleaseDefinition {
-Param(
-    [string]$org, 
-    [string]$project, 
-    [string]$releaseName, 
-    [pscredential]$creds, 
-    [string]$buildName, 
-    [string]$buildID,
-    [string]$projectID,
-    $publicReleaseVariables,
-    $secretReleaseVariables
-)
-    $uri = "https://vsrm.dev.azure.com/$org/$project/_apis/release/definitions?api-version=5.0-preview.3"
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    Param(
+        [string]$org, 
+        [string]$project, 
+        [string]$releaseName, 
+        [pscredential]$creds, 
+        [string]$buildName, 
+        [string]$buildID,
+        [string]$projectID,
+        $publicReleaseVariables,
+        $secretReleaseVariables,
+        [switch]$Force
+    )
 
-    $orgParams = @{
-        org = $org
-        creds = $creds
-    }
+    begin {
+        $uri = "https://vsrm.dev.azure.com/$org/$project/_apis/release/definitions?api-version=5.0-preview.3"
 
-    $payload = @{
-        name = $releaseName        
-        releaseNameFormat = "Release-`$(rev:r)"
-        artifacts = @(
-            @{
-                definitionReference = @{
-                    definition = @{
-                        id = $buildID
-                        name = $buildName
-                    }
-                    project = @{
-                        id = $projectId
-                        name = $project
-                    }
-                }
-                isPrimary = $true
-                isRetained = $false
-                alias = $buildName
-                type = "Build"
-            }
-        )
-        environments = @(
-            (New-Environment -environmentName "Dev" -rank 1 @orgParams),
-            (New-Environment -environmentName "Test" -rank 2 @orgParams),
-            (New-Environment -environmentName "Prod" -rank 3 @orgParams)
-        )
-        triggers = @(
-            @{
-                artifactAlias = $buildName
-                triggerType = "artifactSource"
-            }
-        )
-        variables = Get-DeployVariables $publicReleaseVariables $secretReleaseVariables
-    }
-
-    $newReleaseParams = @{
-        uri = $uri 
-        Method = "Post"
-        Body = ($payload | ConvertTo-Json -Compress -Depth 100)
-        Headers = @{
-            Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+        $orgParams = @{
+            org = $org
+            creds = $creds
         }
-        Credential = $creds
-        ContentType = "application/json"
+
+        $payload = @{
+            name = $releaseName        
+            releaseNameFormat = "Release-`$(rev:r)"
+            artifacts = @(
+                @{
+                    definitionReference = @{
+                        definition = @{
+                            id = $buildID
+                            name = $buildName
+                        }
+                        project = @{
+                            id = $projectId
+                            name = $project
+                        }
+                    }
+                    isPrimary = $true
+                    isRetained = $false
+                    alias = $buildName
+                    type = "Build"
+                }
+            )
+            environments = @(
+                (New-Environment -environmentName "Dev" -rank 1 @orgParams),
+                (New-Environment -environmentName "Test" -rank 2 @orgParams),
+                (New-Environment -environmentName "Prod" -rank 3 @orgParams)
+            )
+            triggers = @(
+                @{
+                    artifactAlias = $buildName
+                    triggerType = "artifactSource"
+                }
+            )
+            variables = Get-DeployVariables $publicReleaseVariables $secretReleaseVariables
+        }
+
+        $newReleaseParams = @{
+            uri = $uri 
+            Method = "Post"
+            Body = ($payload | ConvertTo-Json -Compress -Depth 100)
+            Headers = @{
+                Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+            }
+            Credential = $creds
+            ContentType = "application/json"
+        }
     }
 
-    (Invoke-WebRequest @newReleaseParams).Content | ConvertFrom-Json
+    process{
+        if ($Force -or $PSCmdlet.ShouldProcess(
+            $releaseName,             
+            "Create Release Definition for $org on $project" 
+        )) {
+            (Invoke-WebRequest @newReleaseParams).Content | ConvertFrom-Json
+        }
+    }
 } 
 
 Function Remove-ReleaseDefinition {
-Param(
-    [string]$org, 
-    [string]$project, 
-    [int]$releaseDefinitionID, 
-    [pscredential]$creds
-)
-    $uri = "https://vsrm.dev.azure.com/$org/$project/_apis/release/definitions/$releaseDefinitionID`?api-version=5.0-preview.3"
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    Param(
+        [string]$org, 
+        [string]$project, 
+        [int]$releaseDefinitionID, 
+        [pscredential]$creds,
+        [switch]$Force
+    )
 
-    $removeReleaseParams = @{
-        uri = $uri 
-        Method = "Delete"
-        Headers = @{
-            Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+    begin {
+        $uri = "https://vsrm.dev.azure.com/$org/$project/_apis/release/definitions/$releaseDefinitionID`?api-version=5.0-preview.3"
+
+        $removeReleaseParams = @{
+            uri = $uri 
+            Method = "Delete"
+            Headers = @{
+                Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+            }
+            Credential = $creds
+            ContentType = "application/json"
         }
-        Credential = $creds
-        ContentType = "application/json"
     }
 
-    (Invoke-WebRequest @removeReleaseParams).Content | ConvertFrom-Json
+    process {
+        if ($Force -or $PSCmdlet.ShouldProcess(
+            $releaseDefinitionID,             
+            "Remove Release Definition for $org on $project" 
+        )) {
+            (Invoke-WebRequest @removeReleaseParams).Content | ConvertFrom-Json
+        }
+    }
 }
 
 Function Remove-BuildDefinition {
-Param(
-    [string]$org, 
-    [string]$project, 
-    [int]$buildDefinitionID, 
-    [pscredential]$creds
-)
-    $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions/$buildDefinitionID`?api-version=5.0-preview.7"
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    Param(
+        [string]$org, 
+        [string]$project, 
+        [int]$buildDefinitionID, 
+        [pscredential]$creds
+    )
 
-    $removeBuildParams = @{
-        uri = $uri 
-        Method = "Delete"
-        Headers = @{
-            Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+    begin {
+        $uri = "https://dev.azure.com/$org/$project/_apis/build/definitions/$buildDefinitionID`?api-version=5.0-preview.7"
+
+        $removeBuildParams = @{
+            uri = $uri 
+            Method = "Delete"
+            Headers = @{
+                Authorization = ("Basic {0}" -f (Get-AuthToken -creds $creds))
+            }
+            Credential = $creds
+            ContentType = "application/json"
         }
-        Credential = $creds
-        ContentType = "application/json"
     }
 
-    (Invoke-WebRequest @removeBuildParams).Content | ConvertFrom-Json
+    process {
+        if ($Force -or $PSCmdlet.ShouldProcess(
+            $buildDefinitionID,             
+            "Remove Build Definition for $org on $project" 
+        )) {
+            (Invoke-WebRequest @removeBuildParams).Content | ConvertFrom-Json
+        }
+    }
 }
 
 function Get-ReleaseDefinions ([string]$org, [string]$project) {
